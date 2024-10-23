@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rule Engine</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Rule Engine</h1>
+
+        <div class="section">
+            <h2>Create Rule</h2>
+            <form id="create-rule-form">
+                <textarea id="rule-string" placeholder="Enter rule string"></textarea><br>
+                <button type="submit">Create Rule</button>
+            </form>
+            <pre id="create-result"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Combine Rules</h2>
+            <form id="combine-rules-form">
+                <textarea id="rules" placeholder="Enter rules, one per line"></textarea><br>
+                <button type="submit">Combine Rules</button>
+            </form>
+            <pre id="combine-result"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Evaluate Rule</h2>
+            <form id="evaluate-rule-form">
+                <textarea id="attributes" placeholder="Enter attributes in JSON format"></textarea><br>
+                <button type="submit">Evaluate Rule</button>
+            </form>
+            <pre id="evaluate-result"></pre>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to handle form submissions
+
+        document.getElementById('create-rule-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const ruleString = document.getElementById('rule-string').value;
+            const response = await fetch('/api/create_rule', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ rule_string: ruleString })
+            });
+            const result = await response.json();
+            document.getElementById('create-result').textContent = JSON.stringify(result, null, 2);
+        };
+
+        document.getElementById('combine-rules-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const rules = document.getElementById('rules').value.split('\n');
+            const response = await fetch('/api/combine_rules', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ rules: rules })
+            });
+            const result = await response.json();
+            document.getElementById('combine-result').textContent = JSON.stringify(result, null, 2);
+        };
+
+        document.getElementById('evaluate-rule-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const attributes = document.getElementById('attributes').value;
+            const response = await fetch('/api/evaluate_rule', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: attributes
+            });
+            const result = await response.json();
+            document.getElementById('evaluate-result').textContent = JSON.stringify(result, null, 2);
+        };
+    </script>
+</body>
+</html>
